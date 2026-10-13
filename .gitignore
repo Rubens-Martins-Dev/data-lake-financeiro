@@ -1,0 +1,17 @@
+
+# Arquivos temporários do Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Arquivos gerados pelo pipeline
+data/raw/
+data/bronze/
+data/silver/
+data/gold/
+
+# Arquivos locais
+.env
+.ipynb_checkpoints/
+.DS_Store
