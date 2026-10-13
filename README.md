@@ -1,151 +1,160 @@
-# 🏦 Data Lake Financeiro com Apache Spark e Docker
+# Data Lake Financeiro — Pipeline ETL com PySpark
 
-## 📋 Sobre o Projeto
+Projeto de engenharia e análise de dados financeiros utilizando **Python, Pandas e Apache Spark**, com organização dos dados em camadas RAW, Bronze, Silver e Gold.
 
-Projeto completo de **Data Lake** para análise de dados financeiros, implementando arquitetura moderna de Big Data com **Apache Spark**, **PySpark**, **Docker** e **Jupyter Notebook**.
+## 1. Problema de negócio
 
-### 🎯 Objetivos
-- Construir pipeline de ETL escalável
-- Implementar arquitetura de dados em camadas
-- Processar dados financeiros com Spark
-- Gerar insights para tomada de decisão
+Uma operação financeira que processa milhares de transações precisa transformar registros brutos em informações confiáveis para acompanhar seu desempenho.
 
-## 🏗️ Arquitetura
+Sem um processo estruturado de tratamento e consolidação, torna-se difícil responder a perguntas como:
 
-```
-Data Lake Financeiro
-├── RAW Layer      → Dados brutos (CSV, JSON)
-├── BRONZE Layer   → Dados limpos e tipados
-├── SILVER Layer   → Dados transformados e enriquecidos
-└── GOLD Layer     → Dados agregados para análise
-```
+- Qual o volume financeiro movimentado?
+- Quais modalidades concentram mais transações?
+- Como as transações aprovadas e negadas se distribuem?
+- Qual o ticket médio por cliente?
+- Como o volume transacionado varia ao longo do tempo?
 
-## 🛠️ Tecnologias Utilizadas
+**Objetivo:** construir um pipeline ETL que organize, trate e agregue dados financeiros para apoiar análises operacionais e decisões de negócio.
 
-- **Apache Spark 3.4+** - Processamento distribuído
-- **PySpark** - Interface Python para Spark
-- **Docker** - Containerização
-- **Jupyter Notebook** - Desenvolvimento interativo
-- **Pandas** - Manipulação de dados
-- **Python** - Linguagem principal
+## 2. Tecnologias utilizadas
 
-## 📊 Dados Gerados
+| Tecnologia | Aplicação |
+|---|---|
+| Python | Desenvolvimento dos scripts |
+| Pandas | Geração e exportação dos dados sintéticos |
+| PySpark 4.1.1 | Processamento, transformação e agregação |
+| Apache Parquet | Armazenamento das camadas processadas |
+| Git e GitHub | Versionamento e documentação |
+| GitHub Codespaces | Ambiente de desenvolvimento e testes |
 
-### Clientes (10.000 registros)
-- **Informações pessoais**: Nome, CPF, idade
-- **Dados financeiros**: Renda, score de crédito
-- **Segmentação**: Faixa etária, classe de renda
+## 3. Arquitetura do pipeline
 
-### Transações (50.000+ registros)
-- **Tipos**: PIX, TED, DOC, Cartões, Saques
-- **Métricas**: Valores, status, canais
-- **Análise temporal**: Período do dia, dia da semana
-
-## 🚀 Como Executar
-
-### Pré-requisitos
-- Docker Desktop instalado
-- Git (para clonar o repositório)
-
-### Passo a Passo
-
-1. **Clone o repositório**
-```bash
-git clone https://github.com/Rubens-Martins-Dev/data-lake-financeiro.git
-cd data-lake-financeiro
+```text
+RAW
+  |
+  v
+BRONZE
+  |
+  v
+SILVER
+  |
+  v
+GOLD
 ```
 
-2. **Inicie o container Docker**
-```bash
-docker run -d -p 8888:8888 --name jupyter-spark jupyter/pyspark-notebook
-```
+**RAW — Dados brutos**
 
-3. **Acesse o Jupyter Lab**
-```bash
-# Obter token de acesso
-docker logs jupyter-spark
+Geração de duas bases sintéticas:
+- 10.000 clientes em CSV.
+- 50.000 transações financeiras em JSON Lines.
 
-# Acesse: http://localhost:8888 (com o token)
-```
+**BRONZE — Limpeza e padronização**
 
-4. **Execute os notebooks na ordem**
-- `01_gerador_dados_financeiros.ipynb`
-- `02_processamento_spark.ipynb`
+- Conversão de tipos de dados.
+- Remoção de registros inválidos conforme regras implementadas.
+- Tratamento de identificadores duplicados.
+- Gravação em Parquet.
 
-## 📁 Estrutura do Projeto
+**SILVER — Enriquecimento**
 
-```
+- Cálculo da idade dos clientes.
+- Classificação por faixa etária.
+- Segmentação por renda.
+- Integração de clientes e transações.
+- Criação de indicadores temporais.
+
+**GOLD — Indicadores de negócio**
+
+Geração de três conjuntos analíticos:
+
+1. **Resumo por cliente:** quantidade de transações aprovadas, valor movimentado e ticket médio.
+2. **Performance por modalidade:** quantidade e valor financeiro por tipo e status de transação.
+3. **Análise temporal:** quantidade de transações aprovadas e valores movimentados por mês e período do dia.
+
+## 4. Estrutura do repositório
+
+```text
 data-lake-financeiro/
-├── notebooks/
-│   ├── 01_gerador_dados_financeiros.ipynb
-│   └── 02_processamento_spark.ipynb
-├── data/
-│   ├── raw/           # Dados originais
-│   ├── bronze/        # Dados limpos
-│   ├── silver/        # Dados transformados
-│   └── gold/          # Dados para análise
-├── scripts/           # Scripts Python auxiliares
-├── docker-compose.yml # Configuração Docker
-└── README.md         # Este arquivo
+├── scripts/
+│   ├── gerar_clientes.py
+│   ├── gerar_transacoes.py
+│   └── processamento_spark.py
+├── .gitignore
+├── requirements.txt
+└── README.md
 ```
 
-## 🔄 Pipeline ETL
+Os arquivos de dados são gerados durante a execução e não são versionados no repositório.
 
-### 1. RAW Layer
-- **Clientes**: CSV com dados pessoais e financeiros
-- **Transações**: JSON com movimentações bancárias
+## 5. Como executar
 
-### 2. BRONZE Layer
-- Limpeza de dados nulos
-- Tipagem correta dos campos
-- Validações básicas
-- Formato Parquet para otimização
+O projeto foi testado no GitHub Codespaces, utilizando Python 3.14.2, Java 21 e PySpark 4.1.1.
 
-### 3. SILVER Layer
-- Enriquecimento com cálculos derivados
-- Join entre clientes e transações
-- Categorização por faixas (idade, renda, valor)
-- Análise temporal (período do dia, dia da semana)
+**Pré-requisitos:** Python, Java 21 e pip disponíveis no ambiente.
 
-### 4. GOLD Layer
-- **Resumo por Cliente**: Total de transações, ticket médio
-- **Performance por Tipo**: Análise por modalidade
-- **Análise Temporal**: Sazonalidade e padrões
+Instale as dependências:
 
-## 📈 Métricas e Insights
-
-- **Volume Processado**: 60.000+ registros
-- **Valor Transacionado**: R$ 50M+ simulados
-- **Taxa de Aprovação**: ~75% das transações
-- **Ticket Médio**: R$ 800-1.200 por transação
-
-## 🔧 Configurações Spark
-
-```python
-spark = SparkSession.builder \
-    .appName("DataLakeFinanceiro") \
-    .config("spark.sql.adaptive.enabled", "true") \
-    .getOrCreate()
+```bash
+python -m pip install -r requirements.txt
 ```
-## 📝 Aprendizados
 
-Este projeto demonstra:
-- **Arquitetura de Big Data** em ambiente real
-- **Processamento distribuído** com Apache Spark
-- **Boas práticas** de ETL e Data Engineering
-- **Containerização** com Docker
-- **Modelagem dimensional** para analytics
+Gere as bases sintéticas:
 
-## 🤝 Contribuições
+```bash
+python scripts/gerar_transacoes.py
+```
 
-Contribuições são bem-vindas! Por favor, abra uma issue ou pull request.
+Execute o processamento:
 
-## 📧 Contato
+```bash
+python scripts/processamento_spark.py
+```
 
-**[Rubens Martins]**
-- LinkedIn: [https://www.linkedin.com/in/rubens-martins-084b97307/]
-- Email: [rubensdev08@gmail.com]
-- GitHub: [https://github.com/Rubens-Martins-Dev]
+Os resultados serão armazenados automaticamente nas pastas locais `data/bronze`, `data/silver` e `data/gold`, em formato Parquet.
 
----
-⭐ Se este projeto foi útil para você, deixe uma estrela no repositório!
+## 6. Resultados dos testes
+
+O pipeline foi executado no GitHub Codespaces com os seguintes resultados:
+
+| Indicador | Resultado |
+|---|---:|
+| Clientes gerados | 10.000 |
+| Transações geradas | 50.000 |
+| Total de registros de entrada | 60.000 |
+| IDs de transações duplicados no teste | 0 |
+| Transações com clientes inexistentes no teste | 0 |
+| Transações com valor menor ou igual a zero no teste | 0 |
+| Clientes processados pelo Spark | 10.000 |
+| Transações processadas pelo Spark | 50.000 |
+
+As etapas RAW, Bronze, Silver e Gold foram executadas com sucesso, incluindo a gravação dos conjuntos analíticos em Parquet.
+
+Esses testes verificaram a execução e algumas regras básicas de integridade. Eles não representam uma validação de produção.
+
+## 7. Aplicação para o negócio
+
+O pipeline disponibiliza dados consolidados que podem apoiar análises de:
+
+- Volume e valor financeiro das transações.
+- Desempenho das modalidades PIX, TED, DOC, cartões e saques.
+- Distribuição entre transações aprovadas e negadas.
+- Comportamento das movimentações por período.
+- Atividade financeira individual dos clientes.
+
+A camada Gold oferece uma base estruturada para relatórios, análises exploratórias e futuros dashboards.
+
+## 8. Limitações
+
+Este projeto utiliza **dados integralmente sintéticos**, gerados para fins educacionais e de demonstração técnica.
+
+Os valores e padrões financeiros não representam uma instituição real.
+
+O processamento foi testado em ambiente local do Spark dentro do Codespaces, não em um cluster distribuído de produção.
+
+## 9. Autor
+
+**Rubens Martins**
+
+Estudante de Tecnologia em Banco de Dados, com foco em Análise de Dados, SQL, Python e Business Intelligence.
+
+[GitHub](https://github.com/Rubens-Martins-Dev) | [LinkedIn](https://www.linkedin.com/in/rubens-martins-084b97307/)
